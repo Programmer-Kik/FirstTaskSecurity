@@ -4,34 +4,47 @@ import java.util.*;
 
 public class FindFiles {
     public static void main(String[] args) throws Exception {
-        String root = "";
-        String path = "";
+        String root = "C:\\Users\\1\\Desktop\\Test";
         File rootDir = new File(root);
-        File startFile = new File(path);
+
+        String pathStartFile = "C:\\Users\\1\\Desktop\\Test\\Example.txt";
+        File startFile = new File(pathStartFile);
+
         List<String> result = new ArrayList<>();
         Queue<File> fileTree = new PriorityQueue<>();
-        byte[] bytesOfFile = new byte[(int)startFile.length()];
 
-        FileInputStream fileStream = new FileInputStream(startFile.getName());
-        fileStream.read(bytesOfFile);
+        FileInputStream fileStream = new FileInputStream(startFile);
+        int byteOfData = fileStream.read();
+        List<Integer> startFileInBytes = new ArrayList<>();
+        while(byteOfData != -1) {
+            startFileInBytes.add(byteOfData);
+            byteOfData = fileStream.read();
+        }
 
         Collections.addAll(fileTree, rootDir.listFiles());
 
-        while(!fileTree.isEmpty()) {
+        while (!fileTree.isEmpty()) {
             File currentFile = fileTree.remove();
 
-            if(currentFile.isDirectory()){
+            if (currentFile.isDirectory()) {
                 Collections.addAll(fileTree, currentFile.listFiles());
-            }
-            else{
-                byte[] bytesOfCurrentFile = new byte[(int)currentFile.length()];
-                FileInputStream fileInputStream = new FileInputStream(currentFile.getName());
-                fileInputStream.read(bytesOfCurrentFile);
+            } else {
+                fileStream = new FileInputStream(currentFile);
+                byteOfData = fileStream.read();
+                List<Integer> curFileInBytes = new ArrayList<>();
+                while(byteOfData != -1) {
+                    curFileInBytes.add(byteOfData);
+                    byteOfData = fileStream.read();
+                }
 
-                if(Arrays.equals(bytesOfFile, bytesOfCurrentFile)){
+                if(curFileInBytes.containsAll(startFileInBytes)){
                     result.add(currentFile.getName());
                 }
             }
+        }
+
+        for (String item:result) {
+            System.out.println(item);
         }
     }
 }
