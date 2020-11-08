@@ -1,25 +1,18 @@
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.*;
 
 public class FindFiles {
     public static void main(String[] args) throws Exception {
-        String root = "C:\\Users\\1\\Desktop\\Test";
-        File rootDir = new File(root);
+        String root = "src/main/resources/Test";
+        String pathStartFile = "src/main/resources/Test/Example.txt";
 
-        String pathStartFile = "C:\\Users\\1\\Desktop\\Test\\Example.txt";
+        File rootDir = new File(root);
         File startFile = new File(pathStartFile);
 
         List<String> result = new ArrayList<>();
         Queue<File> fileTree = new PriorityQueue<>();
 
-        FileInputStream fileStream = new FileInputStream(startFile);
-        int byteOfData = fileStream.read();
-        List<Integer> startFileInBytes = new ArrayList<>();
-        while(byteOfData != -1) {
-            startFileInBytes.add(byteOfData);
-            byteOfData = fileStream.read();
-        }
+        String startFileInBytes = MyReader.readBytes(startFile);
 
         Collections.addAll(fileTree, rootDir.listFiles());
 
@@ -28,16 +21,11 @@ public class FindFiles {
 
             if (currentFile.isDirectory()) {
                 Collections.addAll(fileTree, currentFile.listFiles());
-            } else {
-                fileStream = new FileInputStream(currentFile);
-                byteOfData = fileStream.read();
-                List<Integer> curFileInBytes = new ArrayList<>();
-                while(byteOfData != -1) {
-                    curFileInBytes.add(byteOfData);
-                    byteOfData = fileStream.read();
-                }
+            }
+            else {
+                String curFileInBytes = MyReader.readBytes(currentFile);
 
-                if(curFileInBytes.containsAll(startFileInBytes)){
+                if(curFileInBytes.contains(startFileInBytes)){
                     result.add(currentFile.getName());
                 }
             }
